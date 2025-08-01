@@ -1,4 +1,5 @@
 package com.garden.smart_garden_scheduler.controller;
+
 import com.garden.smart_garden_scheduler.model.Plant;
 import com.garden.smart_garden_scheduler.service.PlantService;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,6 @@ public class PlantController {
 
     @GetMapping("/weather")
     public String getWeather(@RequestParam String city) {
-        return service.getWeather(city);
+        return service.getWeatherFromAPI(city); // ✅ Now fixed
     }
 }
-

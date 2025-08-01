@@ -4,6 +4,10 @@ import com.garden.smart_garden_scheduler.repository.PlantRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.io.*;
+import java.net.*;
+import org.json.JSONObject;
+
 @Service
 public class PlantService {
     private final PlantRepository repository;
@@ -23,26 +27,52 @@ public class PlantService {
     public Map<String, String> getSchedule(String city) {
         List<Plant> plants = repository.findAll();
         Map<String, String> schedule = new LinkedHashMap<>();
-        String weather = getWeatherFromAPI(city); // dummy now
+        String weather = getWeatherFromAPI(city);
 
         for (Plant plant : plants) {
-            String message = "Water every " + plant.getWateringIntervalDays() + " days.";
-            if (weather.contains("rain")) {
-                message = "Rain expected – Skip watering!";
+            StringBuilder message = new StringBuilder();
+            message.append("Water every ").append(plant.getWateringIntervalDays()).append(" days.");
+            if (weather.toLowerCase().contains("rain")) {
+                message.append(" 🌧️ Rain expected – you can skip today's watering!");
             }
-            schedule.put(plant.getName(), message);
+            schedule.put(plant.getName(), message.toString());
         }
+
         return schedule;
     }
 
-    public String getWeather(String city) {
-        return getWeatherFromAPI(city);
-    }
+    // 🔽 Place this OUTSIDE of any method, but INSIDE the class
+    public String getWeatherFromAPI(String city) {
 
-    // Dummy method for weather - you can later integrate real API
-    private String getWeatherFromAPI(String city) {
-        if (city.equalsIgnoreCase("chandigarh")) return "Rainy";
-        return "Sunny";
+        String apiKey = "e7bf094abc9e499793e145152253107";
+        String url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + apiKey + "&units=metric";
+
+        try {
+            URL apiUrl = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
+            connection.setRequestMethod("GET");
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream())
+            );
+
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            JSONObject json = new JSONObject(response.toString());
+            String weather = json.getJSONArray("weather")
+                    .getJSONObject(0)
+                    .getString("description");
+
+            return weather;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Unavailable";
+        }
     }
 }
-
