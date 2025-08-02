@@ -35,7 +35,7 @@ public class PlantController {
     }
     @GetMapping("/")
     public ResponseEntity<String> home() {
-        return ResponseEntity.ok("✅ Smart Garden Scheduler Backend is Running!");
+        return ResponseEntity.ok("✅ Smart Garden Scheduler Backend is Running!!");
     }
 
 }
