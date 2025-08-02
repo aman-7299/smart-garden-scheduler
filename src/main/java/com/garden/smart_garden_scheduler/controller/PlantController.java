@@ -2,6 +2,7 @@ package com.garden.smart_garden_scheduler.controller;
 
 import com.garden.smart_garden_scheduler.model.Plant;
 import com.garden.smart_garden_scheduler.service.PlantService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,4 +33,9 @@ public class PlantController {
     public String getWeather(@RequestParam String city) {
         return service.getWeatherFromAPI(city); // ✅ Now fixed
     }
+    @GetMapping("/")
+    public ResponseEntity<String> home() {
+        return ResponseEntity.ok("✅ Smart Garden Scheduler Backend is Running!");
+    }
+
 }
